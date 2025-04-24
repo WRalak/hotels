@@ -1,22 +1,35 @@
 'use client';
 
+import Link from 'next/link';
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 
+interface NavLink {
+  name: string;
+  path: string;
+}
+
+interface User {
+  name: string;
+  image: string;
+}
+
 const Navbar = () => {
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { name: 'Home', path: '/' },
-    { name: 'Products', path: '/' },
-    { name: 'Contact', path: '/' },
-    { name: 'About', path: '/' },
+    { name: 'Hotels', path: '/Hotels' },
+    { name: 'Experiences', path: '/experiences' },
+    { name: 'About', path: '/about' },
   ];
 
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [hasWhiteBg, setHasWhiteBg] = useState<boolean>(false);
 
-  // Dummy auth data — replace with actual auth logic
-  const isLoggedIn = true;
-  const user = {
+  // Dummy auth data
+  const isLoggedIn: boolean = false;
+  const user: User = {
     name: 'John Doe',
     image: 'https://i.pravatar.cc/40',
   };
@@ -25,52 +38,91 @@ const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    
+
+    // Check if current page has white background
+    const checkBackground = () => {
+      const bodyStyles = window.getComputedStyle(document.body);
+      const bgColor = bodyStyles.backgroundColor;
+      setHasWhiteBg(bgColor === 'rgb(255, 255, 255)' || bgColor === 'white');
+    };
+
     window.addEventListener("scroll", handleScroll);
+    checkBackground();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Determine text and background colors
+  const getNavStyles = () => {
+    // If page has white bg, always use dark text
+    if (hasWhiteBg) {
+      return {
+        bg: 'bg-white shadow-md',
+        text: 'text-gray-800',
+        logoText: 'text-gray-800',
+        underline: 'bg-gray-800',
+        button: 'bg-black text-white',
+        profileBorder: ''
+      };
+    }
+
+    // Otherwise use scroll-dependent colors
+    return isScrolled 
+      ? {
+          bg: 'bg-white/80 shadow-md backdrop-blur-lg',
+          text: 'text-gray-700',
+          logoText: 'text-gray-700',
+          underline: 'bg-gray-700',
+          button: 'bg-black text-white',
+          profileBorder: ''
+        }
+      : {
+          bg: 'bg-transparent',
+          text: 'text-white',
+          logoText: 'text-white',
+          underline: 'bg-white',
+          button: 'bg-white text-gray-800',
+          profileBorder: 'border-2 border-white/30'
+        };
+  };
+
+  const styles = getNavStyles();
+
   return (
-    <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
-      isScrolled 
-          ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" 
-          : "bg-transparent text-white py-4 md:py-6"
-    }`}>
+    <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 py-4 md:py-6 ${styles.bg} ${styles.text}`}>
       {/* Logo */}
-      <a href="/" className="flex items-center gap-2">
-        <img 
-          src={"https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/dummyLogo/dummyLogoWhite.svg"} 
-          alt="logo" 
-          className={`h-9 ${isScrolled ? "invert opacity-80" : ""}`} 
+      <Link href="/" className="flex items-center gap-2">
+        <Image 
+          src="/kenyan.png" 
+          alt="Kenyan Flag" 
+          width={52} 
+          height={30} 
+          className="rounded-sm"
         />
-      </a>
+        <h1 className={`text-2xl font-bold ${styles.logoText}`}>Hotels254</h1>
+      </Link>
 
       {/* Desktop Nav */}
       <div className="hidden md:flex items-center gap-4 lg:gap-8">
         {navLinks.map((link, i) => (
-          <a 
+          <Link 
             key={i} 
             href={link.path} 
-            className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"}`}
+            className="group flex flex-col gap-0.5"
           >
             {link.name}
-            <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
-          </a>
+            <div className={`h-0.5 w-0 group-hover:w-full transition-all duration-300 ${styles.underline}`} />
+          </Link>
         ))}
-        <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
-          isScrolled ? 'text-black border-gray-300' : 'text-white border-white'
-        } transition-all`}>
-          New Launch
-        </button>
       </div>
 
-      {/* Desktop Right - Conditional based on login status */}
+      {/* Desktop Right */}
       <div className="hidden md:flex items-center gap-4 relative">
-        {/* Search icon */}
-        <svg className={`h-6 w-6 ${isScrolled ? "text-gray-700" : "text-white"}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <Link href="/search" className="h-6 w-6">
+          <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </Link>
 
         {isLoggedIn ? (
           <div className="relative">
@@ -78,64 +130,68 @@ const Navbar = () => {
               className="flex items-center gap-2 cursor-pointer" 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <img 
+              <Image 
                 src={user.image} 
                 alt="Profile" 
-                className={`w-10 h-10 rounded-full ${!isScrolled ? "border-2 border-white/30" : ""}`}
+                width={40}
+                height={40}
+                className={`rounded-full ${styles.profileBorder}`}
               />
-              <span className={isScrolled ? "text-gray-700" : "text-white"}>
-                {user.name}
-              </span>
+              <span>{user.name}</span>
             </div>
             
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <a href="/my-bookings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <Link href="/my-bookings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   My Bookings
-                </a>
-                <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                </Link>
+                <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Edit Profile
-                </a>
-                <a href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                </Link>
+                <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Settings
-                </a>
+                </Link>
                 <div className="border-t border-gray-100 my-1"></div>
-                <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <Link href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Logout
-                </button>
+                </Link>
               </div>
             )}
           </div>
         ) : (
-          <button className={`px-8 py-2.5 rounded-full transition-all duration-500 ${
-            isScrolled ? 'bg-black text-white' : 'bg-white text-gray-800'
-          }`}>
+          <Link 
+            href="/login" 
+            className={`px-8 py-2.5 rounded-full transition-all duration-500 ${styles.button}`}
+          >
             Login
-          </button>
+          </Link>
         )}
       </div>
 
       {/* Mobile Menu Button */}
       <div className="flex items-center gap-3 md:hidden">
-        <svg 
+        <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          className="h-6 w-6 cursor-pointer text-white" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          viewBox="0 0 24 24"
+          className="h-6 w-6 cursor-pointer"
+          aria-label="Toggle menu"
         >
-          <line x1="4" y1="6" x2="20" y2="6" />
-          <line x1="4" y1="12" x2="20" y2="12" />
-          <line x1="4" y1="18" x2="20" y2="18" />
-        </svg>
+          <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+          </svg>
+        </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu (always has dark text on white bg) */}
       <div className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-all duration-500 z-50 ${
         isMenuOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
-        <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)}>
+        <button 
+          className="absolute top-4 right-4" 
+          onClick={() => setIsMenuOpen(false)}
+          aria-label="Close menu"
+        >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -143,42 +199,57 @@ const Navbar = () => {
         </button>
 
         {navLinks.map((link, i) => (
-          <a key={i} href={link.path} onClick={() => setIsMenuOpen(false)}>
+          <Link 
+            key={i} 
+            href={link.path} 
+            onClick={() => setIsMenuOpen(false)}
+            className="hover:text-gray-600"
+          >
             {link.name}
-          </a>
+          </Link>
         ))}
 
-        <button className="border border-gray-300 px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
+        <Link 
+          href="/new-launch" 
+          className="border border-gray-300 px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all hover:bg-gray-100"
+          onClick={() => setIsMenuOpen(false)}
+        >
           New Launch
-        </button>
+        </Link>
 
         {isLoggedIn ? (
           <>
             <div className="flex items-center gap-2 my-2">
-              <img 
+              <Image 
                 src={user.image} 
                 alt="Profile" 
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full"
               />
               <span>{user.name}</span>
             </div>
-            <a href="/my-bookings" className="text-gray-700" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/my-bookings" className="text-gray-700 hover:text-gray-600" onClick={() => setIsMenuOpen(false)}>
               My Bookings
-            </a>
-            <a href="/profile" className="text-gray-700" onClick={() => setIsMenuOpen(false)}>
+            </Link>
+            <Link href="/profile" className="text-gray-700 hover:text-gray-600" onClick={() => setIsMenuOpen(false)}>
               Edit Profile
-            </a>
-            <a href="/settings" className="text-gray-700" onClick={() => setIsMenuOpen(false)}>
+            </Link>
+            <Link href="/settings" className="text-gray-700 hover:text-gray-600" onClick={() => setIsMenuOpen(false)}>
               Settings
-            </a>
-            <button className="text-red-500">
+            </Link>
+            <Link href="/logout" className="text-red-500 hover:text-red-600">
               Logout
-            </button>
+            </Link>
           </>
         ) : (
-          <button className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500">
+          <Link 
+            href="/login" 
+            className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500 hover:bg-gray-800"
+            onClick={() => setIsMenuOpen(false)}
+          >
             Login
-          </button>
+          </Link>
         )}
       </div>
     </nav>

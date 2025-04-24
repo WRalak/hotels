@@ -7,8 +7,8 @@ import Image from 'next/image';
 const images = [
   {
     src: '/logo1.jpg',
-    title: 'Luxury Escape in the Alps',
-    description: 'Indulge in serene mountain views and cozy chalet vibes.',
+title: 'Discover Your Perfect Getaway Destination',
+description: 'Unparalleled luxury and comfort await at  the world\'s most exclusive hotels and resorts. Start your journey today.',
   },
   {
     src: '/logo2.jpg',
