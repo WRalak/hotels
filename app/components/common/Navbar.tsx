@@ -57,7 +57,7 @@ export default function Navbar({
 
   const navLinks: NavLink[] = [
     { name: translations.home, path: '/', translationKey: 'home' },
-    { name: translations.hotels, path: '/hotels', translationKey: 'hotels' },
+    { name: translations.hotels, path: '/Hotels', translationKey: 'Hotels' },
     { name: translations.regions, path: '/regions', translationKey: 'regions' },
     { name: translations.experiences, path: '/experiences', translationKey: 'experiences' }
   ];
