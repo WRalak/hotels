@@ -75,7 +75,7 @@ const FeaturedHotels = () => {
       stars.push(<FaStar key="half" className="text-yellow-400 opacity-50" />);
     }
 
-    const remainingStars = 3 - stars.length;
+    const remainingStars = 5 - stars.length;
     for (let i = 0; i < remainingStars; i++) {
       stars.push(<FaStar key={`empty-${i}`} className="text-gray-300" />);
     }
@@ -89,7 +89,7 @@ const FeaturedHotels = () => {
   };
 
   return (
-    <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-gray-900 mb-3">Featured Hotels</h2>
         <p className="text-sm text-gray-600 max-w-2xl mx-auto">
@@ -99,54 +99,52 @@ const FeaturedHotels = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {hotels.map((hotel) => (
-          <Link key={hotel.id} href={`/hotels/${hotel.id}`} passHref>
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-              <div className="relative aspect-[4/3]">
+          <div key={hotel.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+            <Link href={`/hotels/${hotel.id}`} passHref>
+              <div className="relative h-48 w-full"> {/* Fixed height container */}
                 <Image
                   src={hotel.image}
                   alt={hotel.name}
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  priority={hotel.id <= 2} // Only prioritize first two images
                 />
               </div>
+            </Link>
 
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-xs">{hotel.name}</h3>
-                  {renderStars(hotel.rating)}
-                </div>
+            <div className="p-4">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-semibold text-sm">{hotel.name}</h3>
+                {renderStars(hotel.rating)}
+              </div>
 
-                <div 
-                  className="flex items-center text-gray-600 mb-3 hover:text-blue-500 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openGoogleMaps(hotel.coordinates || '', hotel.location);
-                  }}
-                >
-                  <FaLocationDot className="mr-1 text-xs text-gray-500" />
-                  <span className="text-xs">{hotel.location}</span>
-                </div>
+              <div 
+                className="flex items-center text-gray-600 mb-3 hover:text-blue-500 transition-colors cursor-pointer"
+                onClick={() => openGoogleMaps(hotel.coordinates || '', hotel.location)}
+              >
+                <FaLocationDot className="mr-1 text-xs text-gray-500" />
+                <span className="text-xs">{hotel.location}</span>
+              </div>
 
-                <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                  <p className="font-bold text-xs text-gray-900">KSH {hotel.price.toLocaleString()}/night</p>
-                  <span className="flex items-center text-gray-600 text-xs font-medium">
+              <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                <p className="font-bold text-xs text-gray-900">KSH {hotel.price.toLocaleString()}/night</p>
+                <Link href={`/hotels/${hotel.id}`} passHref>
+                  <span className="flex items-center text-gray-600 text-xs font-medium hover:text-blue-500 transition-colors">
                     View details <FaArrowRight className="ml-1 text-xs" />
                   </span>
-                </div>
+                </Link>
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
-      {/* View all Hotels button */}
       <div className="text-center mt-8">
         <Link href="/Hotels" passHref>
-        <button className="inline-flex items-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-600 bg-white cursor-pointer">
-  View all Hotels
-</button>
-
+          <button className="inline-flex items-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-600 bg-white hover:bg-gray-50 transition-colors">
+            View all Hotels
+          </button>
         </Link>
       </div>
     </section>

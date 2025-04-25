@@ -4,6 +4,7 @@ import { Playfair_Display, Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import NavbarContainer from "./components/common/NavbarContainer";
 
 // Primary app fonts
 const geistSans = Geist({
@@ -54,7 +55,7 @@ export default function RootLayout({
           antialiased min-h-screen flex flex-col justify-between
         `}
       >
-        <Navbar />
+        <NavbarContainer />
         {children}
         <Footer />
       </body>
